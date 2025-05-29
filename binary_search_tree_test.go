@@ -128,7 +128,7 @@ func makeBst(input []int) *BinarySearchTree {
 	}
 	result := NewBst(input[0])
 	for i := 1; i < len(input); i++ {
-		result = result.Insert(input[i])
+		result.Insert(input[i])
 	}
 	return result
 }

@@ -1,7 +1,5 @@
 package binarysearchtree
 
-import "fmt"
-
 type stack struct {
   items []*BinarySearchTree
 }
@@ -27,7 +25,6 @@ type BinarySearchTree struct {
 func NewBst(i int) *BinarySearchTree {
   bst := new(BinarySearchTree)
   bst.data = i
-  fmt.Println("New Tree:", i)
   return bst
 }
 
@@ -58,7 +55,6 @@ func (bst *BinarySearchTree) lengthL() int {
   return 0
 }
 
-
 // Insert inserts an int into the BinarySearchTree.
 // Inserts happen based on the rules of a binary search tree
 func (bst *BinarySearchTree) Insert(i int) *BinarySearchTree {
@@ -83,6 +79,7 @@ func (bst *BinarySearchTree) Insert(i int) *BinarySearchTree {
     }
   }
 
+  // rebalance
   left := 0
   right := 0
   if root.left != nil {
@@ -92,37 +89,43 @@ func (bst *BinarySearchTree) Insert(i int) *BinarySearchTree {
     right = root.lengthR()
   } 
 
+  var newRoot *BinarySearchTree
   if left > right && left - right > 1 {
     if root.left.lengthL() > root.left.lengthR() {
-      newRoot := root.left
+      newRoot = root.left
       root.left = newRoot.right
       newRoot.right = root
-      root = newRoot
     } else {
-      newRoot := root.left.right
+      newRoot = root.left.right
       root.left.right = newRoot.left
       newRoot.left = root.left
       root.left = newRoot.right
       newRoot.right = root
-      root = newRoot
     }
+    swap(root, newRoot)
+    root.right = newRoot
   } else if right > left && right - left > 1 {
     if root.right.lengthL() > root.right.lengthR() {
-      newRoot := root.right.left
+      newRoot = root.right.left
       root.right.left = newRoot.right
       newRoot.right = root.right
       root.right = newRoot.left
       newRoot.left = root
-      root = newRoot
     } else {
-      newRoot := root.right
+      newRoot = root.right
       root.right = newRoot.left
       newRoot.left = root
-      root = newRoot
     }
+    swap(root, newRoot)
+    root.left = newRoot
   }
-  fmt.Println("root left:", root.lengthL(), "right:", root.lengthR())
   return root
+}
+
+func swap(bst1, bst2 *BinarySearchTree) {
+  bst1.right, bst2.right = bst2.right, bst1.right
+  bst1.left, bst2.left = bst2.left, bst1.left
+  bst1.data, bst2.data = bst2.data, bst1.data
 }
 
 // SortedData returns the ordered contents of BinarySearchTree as an []int.
