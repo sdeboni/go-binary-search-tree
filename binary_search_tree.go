@@ -1,3 +1,7 @@
+// Iteration 3 inspired by pustserg's solution where Insert calls NewBst instead of creating new node itself
+//
+// Removed redundant setting of root branches in re-balancing logic
+
 package binarysearchtree
 
 type stack struct {
@@ -42,13 +46,13 @@ func (bst *BinarySearchTree) length() int {
   }
   return right + 1
 }
-func (bst *BinarySearchTree) lengthR() int {
+func (bst *BinarySearchTree) rightLength() int {
   if bst.right != nil {
     return bst.right.length()
   }
   return 0
 }
-func (bst *BinarySearchTree) lengthL() int {
+func (bst *BinarySearchTree) leftLength() int {
   if bst.left != nil {
     return bst.left.length()
   }
@@ -62,16 +66,14 @@ func (bst *BinarySearchTree) Insert(i int) *BinarySearchTree {
   for {
     if i <= bst.data {
       if bst.left == nil {
-        bst.left = new(BinarySearchTree)
-        bst.left.data = i
+        bst.left = NewBst(i)
         break
       } else {
         bst = bst.left
       }
     } else {
       if bst.right == nil {
-        bst.right = new(BinarySearchTree)
-        bst.right.data = i
+        bst.right = NewBst(i)
         break
       } else {
         bst = bst.right
@@ -83,38 +85,34 @@ func (bst *BinarySearchTree) Insert(i int) *BinarySearchTree {
   left := 0
   right := 0
   if root.left != nil {
-    left = root.lengthL()
+    left = root.leftLength()
   } 
   if root.right != nil {
-    right = root.lengthR()
+    right = root.rightLength()
   } 
 
   var newRoot *BinarySearchTree
   if left > right && left - right > 1 {
-    if root.left.lengthL() > root.left.lengthR() {
+    if root.left.leftLength() > root.left.rightLength() {
       newRoot = root.left
       root.left = newRoot.right
-      newRoot.right = root
     } else {
       newRoot = root.left.right
       root.left.right = newRoot.left
       newRoot.left = root.left
       root.left = newRoot.right
-      newRoot.right = root
     }
     swap(root, newRoot)
     root.right = newRoot
   } else if right > left && right - left > 1 {
-    if root.right.lengthL() > root.right.lengthR() {
+    if root.right.leftLength() > root.right.rightLength() {
       newRoot = root.right.left
       root.right.left = newRoot.right
       newRoot.right = root.right
       root.right = newRoot.left
-      newRoot.left = root
     } else {
       newRoot = root.right
       root.right = newRoot.left
-      newRoot.left = root
     }
     swap(root, newRoot)
     root.left = newRoot
